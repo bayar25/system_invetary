@@ -6,17 +6,33 @@ export default class product {
   }
   add(product) {
     return new Promise((resolve, reject) => {
-      knex(this.table)
-        .insert({
-          name_product: product.name,
-          id_brand: product.idBrand,
-          id_category: product.idCategory
+      knex
+        .transaction(function(trx) {
+          return trx
+            .insert(
+              {
+                name_product: product.name,
+                id_brand: product.idBrand,
+                id_category: product.idCategory
+              },
+              "id_product"
+            )
+            .into('product')
+            .then(function(id) {
+              return trx("inventary").insert({
+                id_product: id,
+                priceNowSale: 0,
+                stock: 0
+              });
+            });
         })
-        .catch(err => {
-          reject(err);
-        })
-        .then(() => {
+        .then(function(inserts) {
+          console.log(inserts.length + " nuevo producto guardado.");
           resolve(true);
+        })
+        .catch(function(err) {
+          console.error(err);
+          reject(err);
         });
     });
   }
@@ -53,7 +69,7 @@ export default class product {
   view(search = "") {
     return new Promise((resolve, reject) => {
       knex
-        .select('*')
+        .select("*")
         .from("view_product")
         .where("name", "like", `%${search}%`)
         .then(dt => {
@@ -67,7 +83,7 @@ export default class product {
   viewSearch(search = "") {
     return new Promise((resolve, reject) => {
       knex
-        .select('*')
+        .select("*")
         .from("view_product")
         .where("name", "like", `${search}%`)
         .limit(5)

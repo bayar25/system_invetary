@@ -1,14 +1,14 @@
 <template>
   <div class="brand">
-       <section class="hero is-info">
-        <div class="hero-body">
-          <div class="container">
-            <h1 class="title">
-             Marca
-            </h1>
-          </div>
+    <section class="hero is-info">
+      <div class="hero-body">
+        <div class="container">
+          <h1 class="title">
+            Marca
+          </h1>
         </div>
-      </section>
+      </div>
+    </section>
     <div class="brandPag" alt="Max-width 90%">
       <section class="section">
         <div class="container">
@@ -22,18 +22,10 @@
           </div>
           <div class="buttons level-right">
             <b-button
-              v-if="getTypeQuery == 'add'"
               type="is-link"
-              label="Agregar"
-              @click="add"
-              :disabled="!getActiveBrand"
-            />
-            <b-button
-              v-if="getTypeQuery == 'update'"
-              type="is-link"
-              label="Actualizar"
-              @click="up"
-              :disabled="!validUpdate"
+              :label="label"
+              @click="clickOk"
+              :disabled="!valid"
             />
             <b-button type="is-danger" label="Cancelar" @click="cancel" />
           </div>
@@ -110,8 +102,19 @@ export default {
       }
     },
     // TODO: quitar y pasar a la store
-    validUpdate() {
-      return !!this.getActiveBrand && !(this.name == this.getUpBrand);
+    valid() {
+      if (this.getTypeQuery == "add") {
+        return !!this.getActiveBrand;
+      } else if (this.getTypeQuery == "update") {
+        return !!this.getActiveBrand && !(this.name == this.getUpBrand);
+      }
+    },
+    label() {
+      if (this.getTypeQuery == "add") {
+        return "Agregar";
+      } else if (this.getTypeQuery == "update") {
+        return "Actualizar";
+      }
     }
   },
   methods: {
@@ -128,6 +131,13 @@ export default {
       setBrand: types.mutations.setBrand,
       setUpBrand: types.mutations.setUpBrand
     }),
+    clickOk() {
+      if (this.getTypeQuery == "add") {
+        this.add();
+      } else if (this.getTypeQuery == "update") {
+        this.up();
+      }
+    },
     updateClick(dt) {
       this.setTypeQuery("update");
       this.setIdBrand(dt.id);
