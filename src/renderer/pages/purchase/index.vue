@@ -305,6 +305,7 @@ export default {
     searchResp(prod) {
       this.dtIdProduct = prod.id;
       this.dtProduct = prod.name;
+      this.priceSale = prod.price;
     },
     dtCancel() {
       this.dtId = 0;

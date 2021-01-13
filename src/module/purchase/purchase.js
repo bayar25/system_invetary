@@ -20,24 +20,26 @@ const state = {
 };
 
 const actions = {
-  [types.actions.addPurchase]: ({ dispatch, commit, state }) => {
-    let valid = dispatch(types.actions.validPurchase);
+  [types.actions.addPurchase]: ({ getters , commit, state }) => {
+    let valid = getters[types.getters.validPurchase];
     let Purchase = {
       date: state.date,
       total: state.total,
       idProvider: state.idProvider,
       listDt: state.listDt
     };
+    console.log(Purchase);
+    console.log(valid);
     if (valid) {
       db.add(Purchase)
         .then(resp => {
           commit(types.mutations.setReset);
         })
-        .catch(err => {});
+        .catch(err => { console.log(err);});
     }
   },
-  [types.actions.upPurchase]: ({ dispatch, commit, state }) => {
-    let valid = dispatch(types.actions.validPurchase);
+  [types.actions.upPurchase]: ({ getters, commit, state }) => {
+    let valid = getters[types.getters.validPurchase];
     let Purchase = {
       id: state.idPurchase,
       date: state.date,
@@ -115,12 +117,12 @@ const actions = {
       commit(types.mutations.setListDt, dt);
     });
   },
-  [types.actions.validPurchase]: ({ commit }) => {
-    return state.idProvider != 0 && state.listDt.length != 0;
-  }
 };
 
 const getters = {
+  [types.getters.validPurchase]: state => {
+    return state.idProvider != 0 && state.listDt.length > 0;
+  },
   [types.getters.getIdPurchase]: state => {
     return state.idPurchase;
   },

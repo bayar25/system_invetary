@@ -87,7 +87,7 @@
                 field="product"
                 label="Producto"
                 width="30%"
-                numeric
+                centered
                 v-slot="props"
               >
                 {{ props.row.name }}
@@ -95,8 +95,8 @@
               <b-table-column
                 field="brand"
                 label="Marca"
-                width="20%"
-                numeric
+                width="15%"
+                centered
                 v-slot="props"
               >
                 {{ props.row.nameBrand }}
@@ -104,16 +104,36 @@
               <b-table-column
                 field="category"
                 label="Categoria"
-                width="20%"
-                numeric
+                width="10%"
+                centered
                 v-slot="props"
               >
                 {{ props.row.nameCategory }}
               </b-table-column>
+               <b-table-column
+                field="price"
+                label="Precio"
+                width="10%"
+                numeric
+                centered
+                v-slot="props"
+              >
+                {{ props.row.price }}
+              </b-table-column>
+               <b-table-column
+                field="stock"
+                label="Existencias"
+                width="10%"
+                numeric
+                centered
+                v-slot="props"
+              >
+                {{ props.row.stock }}
+              </b-table-column>
               <b-table-column
                 field="options"
                 label="Opciones"
-                width="20%"
+                width="15%"
                 centered
                 v-slot="props"
               >

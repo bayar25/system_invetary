@@ -2,6 +2,7 @@ import namespace from "../../utils/namespace.js";
 
 export default namespace("purchase", {
   getters: [
+    'validPurchase',
     "getIdPurchase",
     "getIdProvider",
     "getDate",
@@ -20,7 +21,6 @@ export default namespace("purchase", {
     "ChangeDtPurchase",
     "viewPurchase",
     "viewDtPurchase",
-    "validPurchase"
   ],
   mutations: [
     "setIdPurchase",

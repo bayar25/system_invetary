@@ -7,12 +7,15 @@ export default class purchase {
   add(purchase) {
     return new Promise((resolve, reject) => {
       let dts = [];
+      let nPurchase = this.formatPurchase(purchase);
+      console.log(purchase);
+      console.log(nPurchase);
       knex
-        .transaction(function(trx) {
+        .transaction((trx) => {
           return trx
-            .insert(this.formatPurchase(purchase), "id_purchase")
+            .insert(nPurchase, "id_purchase")
             .into("purchase")
-            .then(function(id) {
+            .then((id) => {
               purchase.listDt.forEach(dt => {
                 dt.idPurchase = id;
                 let newDt = this.formatDt(dt);
@@ -159,7 +162,7 @@ export default class purchase {
       knex
         .select("*")
         .from("view_dt_purchase")
-        .where("idPurchase",id)
+        .where("idPurchase", id)
         .then(resp => {
           resolve(resp);
         })

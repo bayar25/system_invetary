@@ -33,18 +33,10 @@
           </div>
           <div class="buttons level-right">
             <b-button
-              v-if="getTypeQuery == 'add'"
               type="is-link"
-              label="Agregar"
-              @click="add"
-              :disabled="!validInsert"
-            />
-            <b-button
-              v-if="getTypeQuery == 'update'"
-              type="is-link"
-              label="Actualizar"
-              @click="up"
-              :disabled="!validUpdate"
+              :label="label"
+              @click="clickOk"
+              :disabled="!valid"
             />
             <b-button type="is-danger" label="Cancelar" @click="cancel" />
           </div>
@@ -140,19 +132,23 @@ export default {
         this.setPhone(val);
       }
     },
-    validUpdate() {
-      return (
-        (!!this.getActiveProvider && !(this.name == this.getUpProvider)) ||
-        (!!this.getActivePhone && !(this.name == this.getUpPhone))
-      );
+    // TODO: quitar y pasar a la store
+    valid() {
+      if (this.getTypeQuery == "add") {
+        return !!this.getActiveProvider && !!this.getActivePhone;
+      } else if (this.getTypeQuery == "update") {
+        return (
+          (!!this.getActiveProvider && !(this.name == this.getUpProvider)) ||
+          (!!this.getActivePhone && !(this.name == this.getUpPhone))
+        );
+      }
     },
-    validInsert() {
-      return (
-        !!this.getActiveProvider &&
-        !(this.name == this.getUpProvider) &&
-        !!this.getActivePhone &&
-        !(this.name == this.getUpPhone)
-      );
+    label() {
+      if (this.getTypeQuery == "add") {
+        return "Agregar";
+      } else if (this.getTypeQuery == "update") {
+        return "Actualizar";
+      }
     }
   },
   methods: {
@@ -171,6 +167,13 @@ export default {
       setPhone: types.mutations.setPhone,
       setUpPhone: types.mutations.setUpPhone
     }),
+    clickOk() {
+      if (this.getTypeQuery == "add") {
+        this.add();
+      } else if (this.getTypeQuery == "update") {
+        this.up();
+      }
+    },
     updateClick(dt) {
       this.setTypeQuery("update");
       this.setIdProvider(dt.id);
