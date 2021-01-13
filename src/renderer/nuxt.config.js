@@ -6,7 +6,7 @@
 
 
 module.exports = {
-  mode: 'spa', // or 'universal'
+  ssr: false, // or 'universal'
   head: {
     title: 'sistem_inventary',
     meta: [{ charset: "utf-8" }]
