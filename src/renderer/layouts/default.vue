@@ -36,26 +36,26 @@ body {
   overflow: auto;
 }
 #pag::-webkit-scrollbar {
-    width: 8px;     /* Tamaño del scroll en vertical */
-    height: 8px;    /* Tamaño del scroll en horizontal */
+  width: 8px; /* Tamaño del scroll en vertical */
+  height: 8px; /* Tamaño del scroll en horizontal */
 }
 /* Ponemos un color de fondo y redondeamos las esquinas del thumb */
 #pag::-webkit-scrollbar-thumb {
-    background:hsl(0, 0%, 21%);
+  background: hsl(0, 0%, 21%);
 }
 /* Cambiamos el fondo y agregamos una sombra cuando esté en hover */
 #pag::-webkit-scrollbar-thumb:hover {
-    background: #ffffff;
-    box-shadow: 0 0 2px 1px rgba(0, 0, 0, 0.2);
+  background: #ffffff;
+  box-shadow: 0 0 2px 1px rgba(0, 0, 0, 0.2);
 }
 /* Cambiamos el fondo cuando esté en active */
 #pag::-webkit-scrollbar-thumb:active {
-    background-color: #ffffff;
+  background-color: #ffffff;
 }
 /* Ponemos un color de fondo y redondeamos las esquinas del track */
 #pag::-webkit-scrollbar-track {
-    background: #ffffff;
-    border-radius: 4px;
+  background: #ffffff;
+  border-radius: 4px;
 }
 /* Cambiamos el fondo cuando esté en active o hover */
 #pag::-webkit-scrollbar-track:hover,

@@ -36,8 +36,8 @@
             <h1>Ventas</h1>
           </a>
           <ul v-if="opSale">
-            <li><nuxt-link to="/">Agregar</nuxt-link></li>
-            <li><nuxt-link to="/">Ver</nuxt-link></li>
+            <li><nuxt-link to="/sale/">Agregar</nuxt-link></li>
+            <li><nuxt-link to="/sale/viewSale">Ver</nuxt-link></li>
           </ul>
         </li>
         <li class="menu-item-color">

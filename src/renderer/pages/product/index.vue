@@ -73,7 +73,7 @@
             <h1 class="title">Lista de Productos</h1>
           </div>
           <div class="section">
-            <b-table :data="getListProduct" :striped="true">
+            <b-table class="table" :data="getListProduct" :striped="true">
               <b-table-column
                 field="id"
                 label="Id"
@@ -87,7 +87,7 @@
                 field="product"
                 label="Producto"
                 width="30%"
-                centered
+                centeredyarn
                 v-slot="props"
               >
                 {{ props.row.name }}

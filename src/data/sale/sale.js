@@ -1,31 +1,29 @@
 import knex from "../../utils/connectionDb.js";
 
-export default class purchase {
+export default class sale {
   constructor() {
-    this.table = "purchase";
+    this.table = "sale";
   }
-  add(purchase) {
+  add(sale) {
     return new Promise((resolve, reject) => {
       let dts = [];
-      let nPurchase = this.formatPurchase(purchase);
-      console.log(purchase);
-      console.log(nPurchase);
+      let nSale = this.formatPurchase(sale);
       knex
-        .transaction((trx) => {
+        .transaction(trx => {
           return trx
-            .insert(nPurchase, "id_purchase")
-            .into("purchase")
-            .then((id) => {
-              purchase.listDt.forEach(dt => {
-                dt.idPurchase = id;
+            .insert(nSale, "id_sale")
+            .into("sale")
+            .then(id => {
+              sale.listDt.forEach(dt => {
+                dt.idSale = id;
                 let newDt = this.formatDt(dt);
                 dts.push(newDt);
               });
-              return trx("dt_purchase").insert(dts);
+              return trx("dt_sale").insert(dts);
             });
         })
         .then(function(inserts) {
-          console.log(inserts.length + " new books saved.");
+          console.log(inserts.length + " venta guardada");
           resolve(true);
         })
         .catch(function(err) {
@@ -34,60 +32,58 @@ export default class purchase {
         });
     });
   }
-  formatPurchase(purchase) {
+  formatPurchase(sale) {
     return {
-      date: purchase.date,
-      total_purchase: purchase.total,
-      id_provider: purchase.idProvider
+      n_reference: sale.code,
+      client: sale.client,
+      date: sale.date,
+      total_sale: sale.total,
+      cash: sale.cash,
+      change: sale.change
     };
   }
   formatDt(dt) {
     return {
-      id_purchase: dt.idPurchase,
+      id_sale: dt.idSale,
       id_product: dt.idProduct,
-      price_purchase: dt.pricePurchase,
-      price_sale: dt.priceSale,
-      quantity: dt.quantity,
-      total_dt_purchase: dt.total
+      price_sale: dt.price,
+      quantity_sale: dt.quantity,
+      total_dt_sale: dt.total
     };
   }
-  listUpdate(purchase) {
+  listUpdate(sale) {
     let add = [],
       up = [],
       del = [];
     return new Promise((resolve, reject) => {
-      if (!!purchase) {
-        purchase.listDt.forEach(element => {
-          element.idPurchase = purchase.id;
+      if (!!sale) {
+        sale.listDt.forEach(element => {
+          element.idSale = sale.id;
           if (element.option == "add") {
             add.push(this.formatDt(element));
           } else if (element.option == "up") {
             up.push(element);
           }
         });
-        del = purchase.listDelDt;
+        del = sale.listDelDt;
         resolve({ add, up, del });
       } else {
-        reject("error no se a proporcionado compra para realizar la lista");
+        reject("error no se a proporcionado la venta para realizar la lista");
       }
     });
   }
-  update(purchase) {
+  update(sale) {
     return new Promise((resolve, reject) => {
-      knex(this.table)
-        .where("id_purchase", "=", purchase.id)
-        .update({
-          code: purchase.code,
-          total_purchase: purchase.total,
-          id_provider: purchase.idProvider
-        })
+      knex("sale")
+        .where("id_sale", "=", purchase.id)
+        .update(this.formatPurchase(sale))
         .then(() => {
-          this.listUpdate(purchase).then(({ add, up, del }) => {
-            let pAdd = knex("dt_purchase").insert(add);
+          this.listUpdate(sale).then(({ add, up, del }) => {
+            let pAdd = knex("dt_sale").insert(add);
             let pUp = new Promise((res, rej) => {
               up.forEach((item, index) => {
-                knex("dt_purchase")
-                  .where("id_dt_purchase", "=", item.id)
+                knex("dt_sale")
+                  .where("id_dt_sale", "=", item.id)
                   .update(this.formatDt(item))
                   .catch(err => {
                     rej("Error al  actualizar el detalle");
@@ -99,8 +95,8 @@ export default class purchase {
             });
             let pDel = new Promise((res, rej) => {
               del.forEach((item, index) => {
-                knex("dt_purchase")
-                  .where("id_dt_purchase", "=", item.id)
+                knex("dt_sale")
+                  .where("id_dt_sale", "=", item.id)
                   .del()
                   .catch(err => {
                     rej("Error al eliminar el detalle");
@@ -123,15 +119,15 @@ export default class purchase {
   }
   del(id) {
     return new Promise((resolve, reject) => {
-      knex("dt_purchase")
-        .where("id_purchase", "=", id)
+      knex("dt_sale")
+        .where("id_sale", "=", id)
         .del()
         .catch(err => {
           reject(err);
         })
         .then(() => {
-          knex(this.table)
-            .where("id_purchase", "=", id)
+          knex("sale")
+            .where("id_sale", "=", id)
             .del()
             .catch(err => {
               reject(err);
@@ -142,13 +138,13 @@ export default class purchase {
         });
     });
   }
-  view(purchase) {
+  view(query) {
     return new Promise((resolve, reject) => {
       knex
         .select("*")
-        .from("view_purchase")
-        .whereBetween("date", [purchase.dateIn, purchase.dateOut])
-        .andWhere("idProvider", purchase.idProvider)
+        .from("view_sale")
+        .whereBetween("date", [query.dateIn, query.dateOut])
+        .andWhere(query.option, "like", `%${query.search}%`)
         .then(resp => {
           resolve(resp);
         })
@@ -161,8 +157,8 @@ export default class purchase {
     return new Promise((resolve, reject) => {
       knex
         .select("*")
-        .from("view_dt_purchase")
-        .where("idPurchase", id)
+        .from("view_dt_sale")
+        .where("idSale", id)
         .then(resp => {
           resolve(resp);
         })
