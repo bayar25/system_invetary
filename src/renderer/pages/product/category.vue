@@ -133,9 +133,9 @@ export default {
     }),
     clickOk() {
       if (this.getTypeQuery == "add") {
-        this.add;
+        this.add();
       } else if (this.getTypeQuery == "update") {
-        this.up;
+        this.up();
       }
     },
     updateClick(dt) {

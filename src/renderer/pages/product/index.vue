@@ -77,7 +77,7 @@
               <b-table-column
                 field="id"
                 label="Id"
-                width="10%"
+                width="5%"
                 numeric
                 v-slot="props"
               >
@@ -113,7 +113,7 @@
                <b-table-column
                 field="price"
                 label="Precio"
-                width="10%"
+                width="15%"
                 numeric
                 centered
                 v-slot="props"

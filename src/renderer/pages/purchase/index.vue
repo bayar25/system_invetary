@@ -92,7 +92,7 @@
           </div>
           <div class="buttons level-right">
             <b-button type="is-link" label="Agregar" @click="addDtList" />
-            <b-button type="is-danger" label="Cancelar" />
+            <b-button type="is-danger" label="Cancelar" @click="dtCancel"/>
           </div>
           <b-table :data="DtList" :striped="true">
             <b-table-column
