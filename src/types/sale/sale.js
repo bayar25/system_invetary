@@ -24,7 +24,8 @@ export default namespace("Sale", {
     "delSale",
     "ChangeDtSale",
     "viewSale",
-    "viewDtSale"
+    "viewDtSale",
+    "reportSale"
   ],
   mutations: [
     "setIdSale",

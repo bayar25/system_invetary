@@ -176,6 +176,7 @@
         </section>
         <section class="section">
           <div class="buttons level-right">
+            <b-button type="is-success" label="Generar Factura" @click="reportSale" v-if="this.getOption == 'up'" />
             <b-button type="is-link" label="Agregar" @click="clickSale" />
             <b-button type="is-danger" label="Cancelar" @click="clickCancel" />
           </div>
@@ -280,7 +281,8 @@ export default {
     ...mapActions({
       ChangeDtSale: types.actions.ChangeDtSale,
       addSale: types.actions.addSale,
-      upSale: types.actions.upSale
+      upSale: types.actions.upSale,
+      reportSale:types.actions.reportSale
     }),
     ...mapMutations({
       setListDt: types.mutations.setListDt,

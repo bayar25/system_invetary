@@ -1,5 +1,6 @@
 import types from "../../types/sale/sale.js";
 import dbSale from "../../data/sale/sale.js";
+import reportSale from "../../data/report/bill.js";
 
 import { formatDate } from "../../utils/formateDate.js";
 
@@ -17,14 +18,14 @@ const state = {
   listDelDt: [],
   listSale: [],
   viewSearch: "",
-  viewOption:"client",
+  viewOption: "client",
   dateIn: formatDate(Date()),
   dateOut: formatDate(Date()),
   option: "add"
 };
 
 const actions = {
-  [types.actions.addSale]: ({ getters, commit, state }) => {
+  [types.actions.addSale]: ({ getters, dispatch, state }) => {
     let valid = getters[types.getters.validSale];
     let sale = {
       code: state.code,
@@ -37,8 +38,8 @@ const actions = {
     };
     if (valid) {
       db.add(sale)
-        .then(resp => {
-          commit(types.mutations.setReset);
+        .then(() => {
+          dispatch(types.actions.reportSale);
         })
         .catch(err => {
           console.log(err);
@@ -129,6 +130,36 @@ const actions = {
     db.viewDt(idSale).then(dt => {
       commit(types.mutations.setListDt, dt);
     });
+  },
+  [types.actions.reportSale]: ({ commit }) => {
+    let sale = {
+      code: state.code,
+      client: state.client,
+      date: formatDate(Date(state.date), "normal"),
+      total: state.total,
+      cash: state.cash,
+      change: state.change,
+      listDt: state.listDt
+    };
+    let report = new reportSale(sale);
+    report
+      .fill()
+      .then(res => {
+        console.log(res);
+        return report.generatePDF();
+      })
+      .then(res => {
+        console.log(res);
+        return report.print();
+      })
+      .then(res => {
+        console.log(res);
+        return report.delFile();
+      })
+      .then(res => {
+        console.log(res);
+        commit(types.mutations.setReset);
+      });
   }
 };
 
