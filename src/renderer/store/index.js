@@ -7,11 +7,17 @@ import provider from "../../module/purchase/provider";
 
 import sale from "../../module/sale/sale"
 
+import report from "../../module/report/report"
+
+import config from "../../module/config/config"
+
 export const modules = {
   product,
   category,
   brand,
   purchase,
   provider,
-  sale
+  sale,
+  report,
+  config
 };

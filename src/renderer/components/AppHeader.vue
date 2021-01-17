@@ -43,11 +43,11 @@
         <li class="menu-item-color">
           <nuxt-link class="link" to="/report/">
             <i class="fas fa-file-invoice-dollar"></i>
-            <h1>Informes</h1>
+            <h1>Reportes</h1>
           </nuxt-link>
         </li>
         <li class="menu-item-color">
-          <nuxt-link class="link" to="/">
+          <nuxt-link class="link" to="/config/">
             <i class="fas fa-cogs"></i>
             <h1>Configuración</h1>
           </nuxt-link>

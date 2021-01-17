@@ -1,6 +1,5 @@
-<!DOCTYPE html>
+export default `<!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -37,12 +36,12 @@
         .bill1 {
             width: 108mm;
             margin: 0;
-            margin-right: 5mm;
+            margin-right: 10mm;
         }
         .bill2 {
             width: 108mm;
             margin: 0;
-            margin-left: 5mm;
+            margin-left: 10mm;
         }
         .containerCode {
             grid-column: 1;
@@ -184,4 +183,4 @@
     </div>
 </body>
 
-</html>
+</html>`

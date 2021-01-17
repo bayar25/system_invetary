@@ -1,6 +1,6 @@
 import types from "../../types/sale/sale.js";
 import dbSale from "../../data/sale/sale.js";
-import reportSale from "../../data/report/bill.js";
+import reportSale from "../../report/bill.js";
 
 import { formatDate } from "../../utils/formateDate.js";
 
@@ -39,7 +39,7 @@ const actions = {
     if (valid) {
       db.add(sale)
         .then(() => {
-          dispatch(types.actions.reportSale);
+          //dispatch(types.actions.reportSale);
         })
         .catch(err => {
           console.log(err);

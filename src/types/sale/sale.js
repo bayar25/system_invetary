@@ -1,6 +1,6 @@
 import namespace from "../../utils/namespace.js";
 
-export default namespace("Sale", {
+export default namespace("sale", {
   getters: [
     "validSale",
     "getIdSale",
