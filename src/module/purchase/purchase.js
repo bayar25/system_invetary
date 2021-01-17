@@ -20,7 +20,7 @@ const state = {
 };
 
 const actions = {
-  [types.actions.addPurchase]: ({ getters , commit, state }) => {
+  [types.actions.addPurchase]: ({ getters, commit, state }) => {
     let valid = getters[types.getters.validPurchase];
     let Purchase = {
       date: state.date,
@@ -33,7 +33,9 @@ const actions = {
         .then(resp => {
           commit(types.mutations.setReset);
         })
-        .catch(err => { console.log(err);});
+        .catch(err => {
+          console.log(err);
+        });
     }
   },
   [types.actions.upPurchase]: ({ getters, commit, state }) => {
@@ -51,7 +53,9 @@ const actions = {
         .then(resp => {
           commit(types.mutations.setReset);
         })
-        .catch(err => {console.log(err);});
+        .catch(err => {
+          console.log(err);
+        });
     }
   },
   [types.actions.delPurchase]: ({ dispatch, state }, id) => {
@@ -100,7 +104,6 @@ const actions = {
     } else if (query.dt.product != "" && query.dt.id != 0) {
       newDelDts.push(query.dt);
     }
-    commit(types.mutations.setListDelDt, []);
     commit(types.mutations.setListDelDt, newDelDts);
     commit(types.mutations.setTotal, total);
     commit(types.mutations.setListDt, newDts);
@@ -114,7 +117,7 @@ const actions = {
     db.viewDt(idPurchase).then(dt => {
       commit(types.mutations.setListDt, dt);
     });
-  },
+  }
 };
 
 const getters = {
@@ -161,7 +164,7 @@ const mutations = {
     state.idProvider = query;
   },
   [types.mutations.setDate]: (state, query) => {
-    state.date = formatDate(query);
+    state.date = formatDate(Date(query));
   },
   [types.mutations.setTotal]: (state, query) => {
     state.total = query;
@@ -169,7 +172,7 @@ const mutations = {
   [types.mutations.setReset]: (state, query) => {
     state.idPurchase = 0;
     state.idProvider = 0;
-    state.date = Date();
+    state.date = formatDate(Date());
     state.total = 0;
     state.listDt = [];
     state.listDelDt = [];
@@ -180,6 +183,7 @@ const mutations = {
     state.option = "add";
   },
   [types.mutations.setListDt]: (state, query) => {
+    state.listDt = [];
     state.listDt = query;
   },
   [types.mutations.setListDelDt]: (state, query) => {
@@ -192,10 +196,10 @@ const mutations = {
     state.viewIdProvider = query;
   },
   [types.mutations.setDateIn]: (state, query) => {
-    state.dateIn = query;
+    state.dateIn = formatDate(Date(query));
   },
   [types.mutations.setDateOut]: (state, query) => {
-    state.dateOut = query;
+    state.dateOut = formatDate(Date(query));
   },
   [types.mutations.setOption]: (state, query) => {
     state.option = query;

@@ -6,51 +6,93 @@ export default class purchase {
   }
   add(purchase) {
     return new Promise((resolve, reject) => {
-      let dts = [];
-      let nPurchase = this.formatPurchase(purchase);
-      console.log(purchase);
-      console.log(nPurchase);
-      knex
-        .transaction((trx) => {
-          return trx
-            .insert(nPurchase, "id_purchase")
-            .into("purchase")
-            .then((id) => {
-              purchase.listDt.forEach(dt => {
-                dt.idPurchase = id;
-                let newDt = this.formatDt(dt);
-                dts.push(newDt);
-              });
-              return trx("dt_purchase").insert(dts);
-            });
+      this.insertPurchase(purchase)
+        .then(newPurchase => {
+          return this.insertLot(purchase.listDt, newPurchase);
         })
-        .then(function(inserts) {
-          console.log(inserts.length + " new books saved.");
-          resolve(true);
+        .then(dts => {
+          return this.insertDt(dts);
         })
-        .catch(function(err) {
-          console.error(err);
+        .then(resp => {
+          console.log(resp);
+          resolve(resp);
+        });
+    });
+  }
+
+  insertPurchase(purchase) {
+    return new Promise((resolve, reject) => {
+      knex("purchase")
+        .insert(
+          {
+            date: purchase.date,
+            total_purchase: purchase.total,
+            id_provider: purchase.idProvider
+          },
+          "purchase"
+        )
+        .then(id => {
+          resolve({ idPurchase: id[0], date: purchase.date });
+        })
+        .catch(err => {
           reject(err);
         });
     });
   }
-  formatPurchase(purchase) {
-    return {
-      date: purchase.date,
-      total_purchase: purchase.total,
-      id_provider: purchase.idProvider
-    };
+
+  insertLot(lots, purchase) {
+    return new Promise((resolve, reject) => {
+      let dts = [];
+      let count = 0;
+      lots.forEach(lot => {
+        knex("lot")
+          .insert(
+            {
+              price_sale: lot.priceSale,
+              quantity: lot.quantity,
+              date_lot: purchase.date,
+              id_inventary: lot.idInventory
+            },
+            "id_lot"
+          )
+          .then(id => {
+            count++;
+            dts.push({
+              id_purchase: purchase.idPurchase,
+              id_lot: id[0],
+              price_purchase: lot.pricePurchase,
+              total_dt_purchase: lot.total
+            });
+            if (count == lots.length) {
+              resolve(dts);
+            }
+          })
+          .catch(err => {
+            reject(err);
+          });
+      });
+    });
   }
-  formatDt(dt) {
-    return {
-      id_purchase: dt.idPurchase,
-      id_product: dt.idProduct,
-      price_purchase: dt.pricePurchase,
-      price_sale: dt.priceSale,
-      quantity: dt.quantity,
-      total_dt_purchase: dt.total
-    };
+
+  insertDt(dts) {
+    return new Promise((resolve, reject) => {
+      let count = 0;
+      dts.forEach(dt => {
+        knex("dt_purchase")
+          .insert(dt)
+          .then(() => {
+            count++;
+            if (count == dts.length) {
+              resolve(count);
+            }
+          })
+          .catch(err => {
+            reject(err);
+          });
+      });
+    });
   }
+
   listUpdate(purchase) {
     let add = [],
       up = [],
@@ -60,7 +102,7 @@ export default class purchase {
         purchase.listDt.forEach(element => {
           element.idPurchase = purchase.id;
           if (element.option == "add") {
-            add.push(this.formatDt(element));
+            add.push(element);
           } else if (element.option == "up") {
             up.push(element);
           }
@@ -74,6 +116,7 @@ export default class purchase {
   }
   update(purchase) {
     return new Promise((resolve, reject) => {
+      console.log(purchase);
       knex(this.table)
         .where("id_purchase", "=", purchase.id)
         .update({
@@ -83,34 +126,46 @@ export default class purchase {
         })
         .then(() => {
           this.listUpdate(purchase).then(({ add, up, del }) => {
-            let pAdd = knex("dt_purchase").insert(add);
-            let pUp = new Promise((res, rej) => {
-              up.forEach((item, index) => {
-                knex("dt_purchase")
-                  .where("id_dt_purchase", "=", item.id)
-                  .update(this.formatDt(item))
+            let addDt = new Promise((res, rej) => {
+              if (add.length > 0) {
+                this.insertLot(add, purchase)
+                  .then(dts => {
+                    return this.insertDt(dts);
+                  })
+                  .then(resp => {
+                    res(resp);
+                  })
                   .catch(err => {
-                    rej("Error al  actualizar el detalle");
+                    reject(err);
                   });
-                if (index == up.length - 1) {
-                  res(true);
-                }
-              });
+              }
             });
-            let pDel = new Promise((res, rej) => {
-              del.forEach((item, index) => {
-                knex("dt_purchase")
-                  .where("id_dt_purchase", "=", item.id)
-                  .del()
+            let delDt = new Promise((res, rej) => {
+              if (del.length > 0) {
+                this.delDt(del)
+                  .then(() => {
+                    return this.delLot(del);
+                  })
+                  .then(resp => {
+                    res(resp);
+                  })
                   .catch(err => {
-                    rej("Error al eliminar el detalle");
+                    reject(err);
                   });
-                if (index == del.length - 1) {
-                  res(true);
-                }
-              });
+              }
             });
-            Promise.all([pAdd, pUp, pDel])
+            let upDt = new Promise((res, rej) => {
+              if (up.length > 0) {
+                Promise.all([this.upLot(up, purchase.date), this.upDt(up)])
+                  .then(() => {
+                    res(true);
+                  })
+                  .catch(err => {
+                    rej(err);
+                  });
+              }
+            });
+            Promise.all([addDt, upDt, delDt])
               .then(() => {
                 resolve(true);
               })
@@ -121,15 +176,95 @@ export default class purchase {
         });
     });
   }
+
+  upDt(dts) {
+    return new Promise((resolve, reject) => {
+      let count = 0;
+      dts.forEach(dt => {
+        count++;
+        knex("dt_purchase")
+          .where("id_dt_purchase", "=", dt.id)
+          .update({
+            price_purchase: dt.pricePurchase,
+            total_dt_purchase: dt.total
+          })
+          .then(() => {
+            if (count == dts.length) {
+              resolve(count);
+            }
+          });
+      });
+    });
+  }
+
+  upLot(lots, date) {
+    return new Promise((resolve, reject) => {
+      let count = 0;
+      lots.forEach(lot => {
+        count++;
+        knex("lot")
+          .where("id_lot", "=", lot.idLot)
+          .update({
+            price_sale: lot.priceSale,
+            quantity: lot.quantity,
+            date_lot: date
+          })
+          .then(() => {
+            if (count == dts.length) {
+              resolve(count);
+            }
+          });
+      });
+    });
+  }
+
+  delDt(dts) {
+    return new Promise((resolve, reject) => {
+      let count = 0;
+      dts.forEach(dt => {
+        count++;
+        knex("dt_purchase")
+          .where("id_dt_purchase", "=", dt.id)
+          .del()
+          .catch(err => {
+            reject(err);
+          })
+          .then(() => {
+            if (count == dts.length) {
+              resolve(count);
+            }
+          });
+      });
+    });
+  }
+  delLot(lots) {
+    return new Promise((resolve, reject) => {
+      let count = 0;
+      lots.forEach(lot => {
+        count++;
+        knex("lot")
+          .where("id_lot", "=", lot.idLot)
+          .del()
+          .catch(err => {
+            reject(err);
+          })
+          .then(() => {
+            if (count == lots.length) {
+              resolve(count);
+            }
+          });
+      });
+    });
+  }
+
   del(id) {
     return new Promise((resolve, reject) => {
-      knex("dt_purchase")
+      let count = 0;
+      knex
+        .select("*")
+        .from("view_del_lote")
         .where("id_purchase", "=", id)
-        .del()
-        .catch(err => {
-          reject(err);
-        })
-        .then(() => {
+        .then(resp => {
           knex(this.table)
             .where("id_purchase", "=", id)
             .del()
@@ -137,8 +272,24 @@ export default class purchase {
               reject(err);
             })
             .then(() => {
-              resolve(true);
+              resp.forEach(element => {
+                count++;
+                knex("lot")
+                  .where("id_lot", "=", element.id_lot)
+                  .del()
+                  .catch(err => {
+                    reject(err);
+                  })
+                  .then(() => {
+                    if (count == resp.length) {
+                      resolve(true);
+                    }
+                  });
+              });
             });
+        })
+        .catch(err => {
+          reject(err);
         });
     });
   }

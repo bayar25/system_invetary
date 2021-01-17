@@ -1,31 +1,28 @@
-import namespace from '../../utils/namespace.js';
+import namespace from "../../utils/namespace.js";
 
-export default namespace('provider', {
+export default namespace("provider", {
   getters: [
-    'getTypeQuery',
-    'getProvider',
-    'getUpProvider',
-    'getActiveProvider',
-    'getPhone',
-    'getUpPhone',
-    'getActivePhone',
-    'getListProvider',
+    "getValidProvider",
+    "getTypeQuery",
+    "getProvider",
+    "getUpProvider",
+    "getActiveProvider",
+    "getActivePhone",
+    "getListProvider"
   ],
   actions: [
-    'addProvider',
-    'upProvider',
-    'delProvider',
-    'viewProvider',
-    'resetProvider'
+    "addProvider",
+    "upProvider",
+    "delProvider",
+    "viewProvider",
+    "resetProvider"
   ],
   mutations: [
-    'setTypeQuery',
-    'setProvider',
-    'setUpProvider',
-    'setActiveProvider',
-    'setPhone',
-    'setUpPhone',
-    'setActivePhone',
-    'setListProvider',
+    "setTypeQuery",
+    "setIdProvider",
+    "setProvider",
+    "setUpProvider",
+    "setActiveProvider",
+    "setListProvider"
   ]
 });

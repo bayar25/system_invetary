@@ -10,6 +10,5 @@ export const formatDate = (date, option = "default") => {
   if (option == "normal") {
     return [day, month, year].join("/");
   }
-
   return [year, month, day].join("-");
 };

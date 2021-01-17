@@ -49,6 +49,7 @@
               class="column is-three-quarters"
               :value="dtProduct"
               @select="searchResp"
+              :disabled="upDt"
             />
             <div class="column">
               <b-field label="Cantidad">
@@ -91,8 +92,13 @@
             </div>
           </div>
           <div class="buttons level-right">
-            <b-button type="is-link" label="Agregar" @click="addDtList" />
-            <b-button type="is-danger" label="Cancelar" @click="dtCancel"/>
+            <b-button
+              type="is-link"
+              label="Agregar"
+              @click="addDtList"
+              :disabled="!valid"
+            />
+            <b-button type="is-danger" label="Cancelar" @click="dtCancel" />
           </div>
           <b-table :data="DtList" :striped="true">
             <b-table-column
@@ -184,7 +190,7 @@
         <section class="section">
           <div class="buttons level-right">
             <b-button type="is-link" label="Agregar" @click="clickPurchase" />
-            <b-button type="is-danger" label="Cancelar" @click="clickCancel"/>
+            <b-button type="is-danger" label="Cancelar" @click="clickCancel" />
           </div>
         </section>
       </section>
@@ -202,12 +208,17 @@ export default {
   data() {
     return {
       dtId: 0,
+      dtIdLot: 0,
+      dtIdInventory: 0,
       dtIdProduct: "",
       dtProduct: "",
       quantity: "",
+      upQuantity: "",
+      sotck: 0,
       pricePurchase: "",
       priceSale: "",
-      dtTotal: ""
+      dtTotal: "",
+      upDt: false
     };
   },
   components: { InputSearch },
@@ -257,6 +268,40 @@ export default {
       set: function(val) {
         this.setTotal(val);
       }
+    },
+    valid: {
+      get: function() {
+        let valid =
+          this.dtId == 0 &&
+          this.dtIdLot == 0 &&
+          this.dtIdInventory > 0 &&
+          this.dtIdProduct > 0 &&
+          this.dtProduct != "" &&
+          this.quantity > 0 &&
+          this.pricePurchase > 0 &&
+          this.priceSale > 0 &&
+          this.dtTotal > 0;
+
+        let validUp =
+          this.dtId != 0 &&
+          this.dtIdLot != 0 &&
+          this.dtProduct != "" &&
+          this.quantity != 0 &&
+          this.pricePurchase != 0 &&
+          parseFloat(this.pricePurchase) < parseFloat(this.priceSale) &&
+          this.priceSale != 0 &&
+          this.dtTotal != 0;
+        console.log(
+          parseFloat(this.pricePurchase) < parseFloat(this.priceSale)
+        );
+        if (!this.upDt) {
+          return (
+            valid && parseFloat(this.pricePurchase) < parseFloat(this.priceSale)
+          );
+        } else {
+          return validUp && parseInt(this.sotck) >= parseInt(this.upQuantity) - parseInt(this.quantity);
+        }
+      }
     }
   },
   methods: {
@@ -277,13 +322,16 @@ export default {
       let dt = {
         id: this.dtId,
         idPurchase: this.getIdPurchase,
+        idLot: this.dtIdLot,
         idProduct: this.dtIdProduct,
+        idInventory: this.dtIdInventory,
         product: this.dtProduct,
         quantity: this.quantity,
         pricePurchase: this.pricePurchase,
         priceSale: this.priceSale,
         total: this.dtTotal
       };
+      this.typeDtQuery = "add";
       this.ChangeDtPurchase({ dt: dt, option: "add" });
       this.dtCancel();
     },
@@ -304,32 +352,48 @@ export default {
     },
     searchResp(prod) {
       this.dtIdProduct = prod.id;
+      this.dtIdInventory = prod.idInventory;
       this.dtProduct = prod.name;
       this.priceSale = prod.price;
+      this.sotck = prod.stock;
     },
     dtCancel() {
       this.dtId = 0;
+      this.dtIdLot = 0;
+      this.dtIdInventory = 0;
       this.dtIdProduct = "";
       this.dtProduct = "";
       this.quantity = "";
+      this.upQuantity = 0;
+      this.sotck = 0;
       this.pricePurchase = "";
       this.priceSale = "";
       this.dtTotal = "";
+      this.typeDtQuery = "add";
+      this.upDt = false;
     },
     up(dt) {
       this.dtId = dt.id;
+      this.dtIdLot = dt.idLot;
+      this.dtIdInventory = dt.idInventory;
       this.dtIdProduct = dt.idProduct;
       this.dtProduct = dt.product;
       this.quantity = dt.quantity;
+      this.upQuantity = dt.quantity;
       this.pricePurchase = dt.pricePurchase;
       this.priceSale = dt.priceSale;
+      this.typeDtQuery = "update";
+      this.upDt = true;
     },
     del(dt) {
       this.ChangeDtPurchase({ dt: dt, option: "delete" });
+      this.dtCancel();
+      this.upDt = false;
     }
   },
   mounted() {
     this.viewProvider();
+    this.dtCancel();
   }
 };
 </script>

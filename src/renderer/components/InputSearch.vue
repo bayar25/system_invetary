@@ -6,6 +6,7 @@
         :data="filterDt"
         placeholder="Buscar"
         clearable
+        :disabled="disabled"
         @select="option => (selected = option)"
       >
         <template #empty>No results found</template>
@@ -25,7 +26,7 @@ export default {
       listProduct: []
     };
   },
-  props: ["value"],
+  props: ["value","disabled"],
   methods: {
     ...mapActions({ view: types.actions.viewProductSearch })
   },

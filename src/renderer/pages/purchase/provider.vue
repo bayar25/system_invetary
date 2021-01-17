@@ -22,12 +22,8 @@
                   type="text"
                   placeholder="Ingresar Nombre"
                   v-model="name"
+                  maxlength="200"
                 />
-              </b-field>
-            </div>
-            <div class="column">
-              <b-field label="Telefono">
-                <b-input type="text" placeholder="Ingresar" v-model="phone" />
               </b-field>
             </div>
           </div>
@@ -69,15 +65,6 @@
             </b-table-column>
             <b-table-column
               field="first_name"
-              label="Telefono"
-              width="20%"
-              centered
-              v-slot="props"
-            >
-              {{ props.row.phone }}
-            </b-table-column>
-            <b-table-column
-              field="first_name"
               label="Opciones"
               width="30%"
               centered
@@ -111,10 +98,8 @@ export default {
       getProvider: types.getters.getProvider,
       getUpProvider: types.getters.getUpProvider,
       getActiveProvider: types.getters.getActiveProvider,
-      getPhone: types.getters.getPhone,
-      getUpPhone: types.getters.getUpPhone,
-      getActivePhone: types.getters.getActivePhone,
-      getListProvider: types.getters.getListProvider
+      getListProvider: types.getters.getListProvider,
+      valid:types.getters.getValidProvider
     }),
     name: {
       get: function() {
@@ -124,30 +109,13 @@ export default {
         this.setProvider(val);
       }
     },
-    phone: {
-      get: function() {
-        return this.getPhone;
-      },
-      set: function(val) {
-        this.setPhone(val);
-      }
-    },
-    // TODO: quitar y pasar a la store
-    valid() {
-      if (this.getTypeQuery == "add") {
-        return !!this.getActiveProvider && !!this.getActivePhone;
-      } else if (this.getTypeQuery == "update") {
-        return (
-          (!!this.getActiveProvider && !(this.name == this.getUpProvider)) ||
-          (!!this.getActivePhone && !(this.name == this.getUpPhone))
-        );
-      }
-    },
     label() {
       if (this.getTypeQuery == "add") {
         return "Agregar";
       } else if (this.getTypeQuery == "update") {
         return "Actualizar";
+      } else {
+        return "Agregar";
       }
     }
   },
@@ -163,9 +131,7 @@ export default {
       setTypeQuery: types.mutations.setTypeQuery,
       setIdProvider: types.mutations.setIdProvider,
       setProvider: types.mutations.setProvider,
-      setUpProvider: types.mutations.setUpProvider,
-      setPhone: types.mutations.setPhone,
-      setUpPhone: types.mutations.setUpPhone
+      setUpProvider: types.mutations.setUpProvider
     }),
     clickOk() {
       if (this.getTypeQuery == "add") {
@@ -179,20 +145,18 @@ export default {
       this.setIdProvider(dt.id);
       this.setProvider(dt.name);
       this.setUpProvider(dt.name);
-      this.setPhone(dt.phone);
-      this.setUpPhone(dt.phone);
       this.up();
     },
     deleteClick(dt) {
       this.setTypeQuery("delete");
-      this.setProvider(dt);
-      this.del();
+      this.del(dt);
     },
     cancel() {
       this.resetProvider();
     }
   },
   mounted() {
+    this.resetProvider();
     this.viewProvider();
   }
 };
