@@ -17,7 +17,7 @@
         <section class="section">
           <div class="field">
             <b-field label="Marca">
-              <b-input type="text" placeholder="Ingresar" v-model="name" />
+              <b-input type="text" placeholder="Ingresar" v-model="name" maxlength="40"/>
             </b-field>
           </div>
           <div class="buttons level-right">
@@ -90,8 +90,8 @@ export default {
       getTypeQuery: types.getters.getTypeQuery,
       getBrand: types.getters.getBrand,
       getUpBrand: types.getters.getUpBrand,
-      getActiveBrand: types.getters.getActiveBrand,
-      getListBrand: types.getters.getListBrand
+      getListBrand: types.getters.getListBrand,
+      valid:types.getters.getValidBrand
     }),
     name: {
       get: function() {
@@ -101,19 +101,13 @@ export default {
         this.setBrand(val);
       }
     },
-    // TODO: quitar y pasar a la store
-    valid() {
-      if (this.getTypeQuery == "add") {
-        return !!this.getActiveBrand;
-      } else if (this.getTypeQuery == "update") {
-        return !!this.getActiveBrand && !(this.name == this.getUpBrand);
-      }
-    },
     label() {
       if (this.getTypeQuery == "add") {
         return "Agregar";
       } else if (this.getTypeQuery == "update") {
         return "Actualizar";
+      } else {
+        return "Agregar";
       }
     }
   },
@@ -154,6 +148,7 @@ export default {
     }
   },
   mounted() {
+    this.resetBrand();
     this.viewBrand();
   }
 };

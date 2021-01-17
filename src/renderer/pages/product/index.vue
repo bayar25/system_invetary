@@ -18,7 +18,7 @@
           <div class="section">
             <div class="field">
               <b-field label="Producto">
-                <b-input type="text" placeholder="Ingresar" v-model="name" />
+                <b-input type="text" placeholder="Ingresar" v-model="name" maxlength="145" />
               </b-field>
             </div>
             <div class="columns">
@@ -110,7 +110,7 @@
               >
                 {{ props.row.nameCategory }}
               </b-table-column>
-               <b-table-column
+              <b-table-column
                 field="price"
                 label="Precio"
                 width="15%"
@@ -120,7 +120,7 @@
               >
                 {{ props.row.price }}
               </b-table-column>
-               <b-table-column
+              <b-table-column
                 field="stock"
                 label="Existencias"
                 width="10%"
@@ -172,7 +172,8 @@ export default {
       getActiveProduct: types.getters.getActiveProduct,
       getListProduct: types.getters.getListProduct,
       getListBrand: typesBrand.getters.getListBrand,
-      getListCategory: typesCategory.getters.getListCategory
+      getListCategory: typesCategory.getters.getListCategory,
+      valid:types.getters.getValidProduct
     }),
     name: {
       get: function() {
@@ -198,29 +199,13 @@ export default {
         this.setIdCategory(val);
       }
     },
-    // TODO: quitar y pasar a la store
-    valid() {
-      if (this.getTypeQuery == "add") {
-        return (
-          !!this.getActiveProduct &&
-          !(this.name == this.getUpProduct) &&
-          this.getIdBrand != 0 &&
-          this.getIdCategory != 0
-        );
-      } else if (this.getTypeQuery == "update") {
-        return (
-          !!this.getActiveProduct &&
-          (!(this.name == this.getUpProduct) ||
-            this.getIdBrand != 0 ||
-            this.getIdCategory != 0)
-        );
-      }
-    },
     label() {
       if (this.getTypeQuery == "add") {
         return "Agregar";
       } else if (this.getTypeQuery == "update") {
         return "Actualizar";
+      } else {
+        return "Agregar";
       }
     }
   },
@@ -267,6 +252,7 @@ export default {
     }
   },
   mounted() {
+    this.resetProduct();
     this.viewProduct();
     this.viewBrand();
     this.viewCategory();

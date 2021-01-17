@@ -6,7 +6,7 @@ const connect = knex({
     host            : 'localhost',
     user            : 'root',
     password        : 'Bf12345678',
-    database        : 'bd_marist_inv'
+    database        : 'db_inventary'
   }
 });
 

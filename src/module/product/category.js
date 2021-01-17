@@ -6,7 +6,6 @@ let db = new dbCategory();
 const state = {
   idCategory: 0,
   typeQuery: "add",
-  activeCategory: false,
   category: "",
   upCategory: "",
   listCategory: []
@@ -44,10 +43,11 @@ const actions = {
     }
   },
   [types.actions.delCategory]: ({ dispatch, commit }, category) => {
-    db.delete(category.name)
+    db.delete(category)
       .then(resp => {
         if (resp) {
           console.log("La categoria se a eliminado correctamente.");
+          commit(types.mutations.setCategory, "");
           dispatch(types.actions.viewCategory);
         }
       })
@@ -68,6 +68,12 @@ const actions = {
 };
 
 const getters = {
+  [types.getters.getValidCategory]: state => {
+    if (state.typeQuery == "update") {
+      return state.category != "" || state.category != state.getUpCategory
+    }
+    return state.category != "";
+  },
   [types.getters.getTypeQuery]: state => {
     return state.typeQuery;
   },
@@ -76,9 +82,6 @@ const getters = {
   },
   [types.getters.getUpCategory]: state => {
     return state.upCategory;
-  },
-  [types.getters.getActiveCategory]: state => {
-    return state.activeCategory;
   },
   [types.getters.getListCategory]: state => {
     return state.listCategory;
@@ -93,7 +96,6 @@ const mutations = {
     state.typeQuery = query;
   },
   [types.mutations.setCategory]: (state, query) => {
-    state.activeCategory = !!query;
     state.category = query;
   },
   [types.mutations.setUpCategory]: (state, query) => {

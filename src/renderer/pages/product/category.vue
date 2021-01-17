@@ -1,23 +1,23 @@
 <template>
   <div class="category">
-       <section class="hero is-info">
-        <div class="hero-body">
-          <div class="container">
-            <h1 class="title">
-             Categoria
-            </h1>
-          </div>
+    <section class="hero is-info">
+      <div class="hero-body">
+        <div class="container">
+          <h1 class="title">
+            Categoría
+          </h1>
         </div>
-      </section>
+      </div>
+    </section>
     <div class="categoryPag" alt="Max-width 90%">
       <section class="section">
         <div class="container">
-          <h1 class="title">Formulario de Categoria</h1>
+          <h1 class="title">Formulario de Categoría</h1>
         </div>
         <section class="section">
           <div class="field">
-            <b-field label="Categoria">
-              <b-input type="text" placeholder="Ingresar" v-model="name" />
+            <b-field label="Categoría">
+              <b-input type="text" placeholder="Ingresar" v-model="name" maxlength="45"/>
             </b-field>
           </div>
           <div class="buttons level-right">
@@ -33,7 +33,7 @@
       </section>
       <section class="section">
         <div class="container">
-          <h1 class="title">Lista de Categoria</h1>
+          <h1 class="title">Lista de Categoría</h1>
         </div>
         <section class="section">
           <b-table :data="getListCategory" :striped="true">
@@ -90,8 +90,8 @@ export default {
       getTypeQuery: types.getters.getTypeQuery,
       getCategory: types.getters.getCategory,
       getUpCategory: types.getters.getUpCategory,
-      getActiveCategory: types.getters.getActiveCategory,
-      getListCategory: types.getters.getListCategory
+      getListCategory: types.getters.getListCategory,
+      valid:types.getters.getValidCategory
     }),
     name: {
       get: function() {
@@ -101,19 +101,13 @@ export default {
         this.setCategory(val);
       }
     },
-    // TODO: quitar y pasar a la store
-    valid() {
-      if (this.getTypeQuery == "add") {
-        return !!this.getActiveCategory;
-      } else if (this.getTypeQuery == "update") {
-        return !!this.getActiveCategory && !(this.name == this.getUpCategory);
-      }
-    },
     label() {
       if (this.getTypeQuery == "add") {
-        return 'Agregar';
+        return "Agregar";
       } else if (this.getTypeQuery == "update") {
-        return 'Actualizar';
+        return "Actualizar";
+      } else {
+        return "Agregar";
       }
     }
   },
@@ -154,6 +148,7 @@ export default {
     }
   },
   mounted() {
+    this.resetCategory();
     this.viewCategory();
   }
 };

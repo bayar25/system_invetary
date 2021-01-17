@@ -6,7 +6,6 @@ let db = new dbBrand();
 const state = {
   idBrand:0,
   typeQuery: "add",
-  activeBrand: false,
   brand: "",
   upBrand: "",
   listBrand: []
@@ -44,7 +43,7 @@ const actions = {
     }
   },
   [types.actions.delBrand]: ({ dispatch, commit},brand) => {
-      db.delete(brand.name)
+      db.delete(brand)
         .then(resp => {
           if (resp) {
             commit(types.mutations.setBrand, "");
@@ -69,6 +68,12 @@ const actions = {
 };
 
 const getters = {
+  [types.getters.getValidBrand]: state => {
+    if (state.typeQuery == "update") {
+      return state.brand != "" || state.brand != state.upBrand
+    }
+    return state.brand != "";
+  },
   [types.getters.getTypeQuery]: state => {
     return state.typeQuery;
   },
@@ -77,9 +82,6 @@ const getters = {
   },
   [types.getters.getUpBrand]: state => {
     return state.upBrand;
-  },
-  [types.getters.getActiveBrand]: state => {
-    return state.activeBrand;
   },
   [types.getters.getListBrand]: state => {
     return state.listBrand;
@@ -94,7 +96,6 @@ const mutations = {
     state.typeQuery = query;
   },
   [types.mutations.setBrand]: (state, query) => {
-    state.activeBrand = !!query;
     state.brand = query;
   },
   [types.mutations.setUpBrand]: (state, query) => {

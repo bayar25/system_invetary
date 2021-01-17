@@ -2,6 +2,7 @@ import namespace from '../../utils/namespace.js';
 
 export default namespace('product', {
   getters: [
+    'getValidProduct',
     'getIdProduct',
     'getTypeQuery',
     'getActiveProduct',

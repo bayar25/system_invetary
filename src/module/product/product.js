@@ -6,7 +6,6 @@ let db = new dbProduct();
 const state = {
   idProduct: 0,
   typeQuery: "add",
-  activeProduct: false,
   product: "",
   upProduct: "",
   idCategory: 0,
@@ -55,18 +54,18 @@ const actions = {
         });
     }
   },
-  [types.actions.delProduct]: ({ dispatch}, product) => {
-      db.delete(product.id)
-        .then(resp => {
-          if (resp) {
-            console.log("El producto se a eliminado correctamente.");
-            dispatch(types.actions.resetProduct);
-            dispatch(types.actions.viewProduct);
-          }
-        })
-        .catch(err => {
-          console.log(err);
-        });
+  [types.actions.delProduct]: ({ dispatch }, product) => {
+    db.delete(product)
+      .then(resp => {
+        if (resp) {
+          console.log("El producto se a eliminado correctamente.");
+          dispatch(types.actions.resetProduct);
+          dispatch(types.actions.viewProduct);
+        }
+      })
+      .catch(err => {
+        console.log(err);
+      });
   },
   [types.actions.viewProduct]: ({ commit }, product) => {
     db.view(product).then(dt => {
@@ -88,14 +87,22 @@ const actions = {
 };
 
 const getters = {
+  [types.getters.getValidProduct]: state => {
+    if (state.typeQuery == "update") {
+      return (
+        (state.product != "" || state.product != state.upProduct) &&
+        (state.getIdCategory != 0) & (state.getIdBrand != 0)
+      );
+    }
+    return (
+      state.product != "" && state.getIdCategory != 0 && state.getIdBrand != 0
+    );
+  },
   [types.getters.getIdProduct]: state => {
     return state.idProduct;
   },
   [types.getters.getTypeQuery]: state => {
     return state.typeQuery;
-  },
-  [types.getters.getActiveProduct]: state => {
-    return state.activeProduct;
   },
   [types.getters.getProduct]: state => {
     return state.product;

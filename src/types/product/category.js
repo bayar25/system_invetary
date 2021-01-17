@@ -2,9 +2,9 @@ import namespace from '../../utils/namespace.js';
 
 export default namespace('Category', {
   getters: [
+    'getValidCategory',
     'getIdCategory',
     'getTypeQuery',
-    'getActiveCategory',
     'getCategory',
     'getUpCategory',
     'getListCategory',

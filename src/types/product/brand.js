@@ -2,9 +2,9 @@ import namespace from '../../utils/namespace.js';
 
 export default namespace('brand', {
   getters: [
+    'getValidBrand',
     'getIdBrand',
     'getTypeQuery',
-    'getActiveBrand',
     'getBrand',
     'getUpBrand',
     'getListBrand',
